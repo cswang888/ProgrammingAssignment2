@@ -9,7 +9,7 @@
 ##
 
 makeCacheMatrix <- function(mMatrix = matrix()) {
-
+    
     mInverseMatrix <- NULL
     set <- function(ivm) {
         mMatrix <<- ivm
@@ -20,7 +20,8 @@ makeCacheMatrix <- function(mMatrix = matrix()) {
     getInverseMatrix <- function() mInverseMatrix
     list(set = set, get = get,
          setInverseMatrix = setInverseMatrix,
-         getInverseMatrix = getInverseMatrix)}
+         getInverseMatrix = getInverseMatrix)
+}
 
 ##
 ## Use solve function to get inerse matrix and cache the result for the following
@@ -32,10 +33,19 @@ cacheSolve <- function(x, ...) {
     mInverseMatrix <- x$getInverseMatrix()
     if(!is.null(mInverseMatrix)) {
         message("Getting cached Inverse Matrix")
+        if(anyNA(mInverseMatrix)) {
+            message("The matrix is not an invertible matrix")
+        }
         return(mInverseMatrix)
     }
     mMatrix <- x$get()
-    mInverseMatrix <- solve(mMatrix, ...)
+    if(det(mMatrix) == 0) {
+        message("The matrix is not an invertible matrix")
+        mInverseMatrix <-NA
+    }
+    else {
+        mInverseMatrix <- solve(mMatrix, ...)        
+    }
     x$setInverseMatrix(mInverseMatrix)
     mInverseMatrix
 }
